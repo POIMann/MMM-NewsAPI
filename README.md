@@ -8,7 +8,7 @@ A [MagicMirror²](https://magicmirror.builders) module to to get news from [News
 ![Example](screen1.PNG) 
 
 ## Updates
-- Make sortBy an optional parameter for both `headlines` and `everything`
+- UNDO: Make sortBy an optional parameter for both `headlines` and `everything`
 - Add DEBUG Handling.
 - - Only add `debug: true` to the config section if you are experiencing issues and require more information to find issues.
 - Replaced moment with luxon
@@ -25,6 +25,8 @@ cd ~/MagicMirror/modules
 Clone this repository:
 ````
 git clone https://github.com/mumblebaj/MMM-NewsAPI.git
+cd MMM-NewsAPI
+npm install
 ````
 
 Add the module to the modules array in the `config/config.js` file:
@@ -111,7 +113,6 @@ When using `headlines`, `country` and `sources` cannot be used together. <br>The
                         type: "horizontal",
                         choice: "headlines",
                         pageSize: 10,
-                        sortBy: "relevance",
                         drawInterval: 1000*30,
                         templateFile: "template.html",
                         fetchInterval: 1000*60*60,
@@ -137,8 +138,7 @@ When using `headlines`, `country` and `sources` cannot be used together. <br>The
 To update the module to the latest version, use your terminal to go to your MMM-NewsAPI module folder and type the following command:
 
 ````
-git pull
 cd MMM-NewsAPI
+git pull
 npm install
 ```` 
-

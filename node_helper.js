@@ -11,7 +11,7 @@ const DateTime = luxon.DateTime
 
 module.exports = NodeHelper.create({
     // Start function
-    start: function() {
+    start: function () {
         console.log('Starting node_helper for module: ' + this.name)
 
         // Declare any defaults
@@ -21,37 +21,36 @@ module.exports = NodeHelper.create({
         this.endPoint2 = "https://newsapi.org/v2/everything?"
     },
 
-    deconHeadlines: function(payload) {
+    deconHeadlines: function (payload) {
         var query = payload
-        for(i in query) {
+        for (i in query) {
             var q = query[i]
             var qs = {}
             if (q.hasOwnProperty("sources") && q.sources !== "") {
                 var t = q["sources"].replace(/\s/g, "")
-                qs = Object.assign({}, qs, {"sources":t})
+                qs = Object.assign({}, qs, { "sources": t })
             }
-            if (q.hasOwnProperty("q") && q.q !== "") qs = Object.assign({}, qs, {"q":q["q"]})
-            if (q.hasOwnProperty("qInTitle") && q.qInTitle !== "") qs = Object.assign({}, qs, {"qIntTitle":q["qInTitle"]})
-            if (q.hasOwnProperty("category") && q.category !== "") qs = Object.assign({}, qs, {"category":q["category"]})
+            if (q.hasOwnProperty("q") && q.q !== "") qs = Object.assign({}, qs, { "q": q["q"] })
+            if (q.hasOwnProperty("qInTitle") && q.qInTitle !== "") qs = Object.assign({}, qs, { "qIntTitle": q["qInTitle"] })
+            if (q.hasOwnProperty("category") && q.category !== "") qs = Object.assign({}, qs, { "category": q["category"] })
             if (q.hasOwnProperty("domains") && q.domains !== "") {
                 var d = q["domains"].replace(/\s/g, "")
-                qs = Object.assign({}, qs, {"domains":d})
+                qs = Object.assign({}, qs, { "domains": d })
             }
             if (q.hasOwnProperty("excludeDomains") && q.excludeDomains !== "") {
                 var ed = q["domains"].replace(/\s/g, "")
-                qs = Object.assign({}, qs, {"excludeDomains":ed})
+                qs = Object.assign({}, qs, { "excludeDomains": ed })
             }
-            if (q.hasOwnProperty("language") && q.language !== "") qs = Object.assign({}, qs, {"language":q["language"]})
+            if (q.hasOwnProperty("language") && q.language !== "") qs = Object.assign({}, qs, { "language": q["language"] })
             if (q.hasOwnProperty("country") && q.country !== "") {
                 if (q.sources === "") {
-                    qs = Object.assign({}, qs, {"country":q["country"]})
+                    qs = Object.assign({}, qs, { "country": q["country"] })
                 } else if (!q.sources) {
-                    qs = Object.assign({}, qs, {"country":q["country"]})
+                    qs = Object.assign({}, qs, { "country": q["country"] })
                 }
-            } 
-            qs = Object.assign({}, qs, {"pageSize":payload.pageSize})
-            if (q.hasOwnProperty("sortBy") && q.sortBy !== "") qs = Object.assign({}, qs, {"sortBy":payload.sortBy})
-            qs = Object.assign({}, qs, {"apiKey":payload.apiKey})
+            }
+            qs = Object.assign({}, qs, { "pageSize": payload.pageSize })
+            qs = Object.assign({}, qs, { "apiKey": payload.apiKey })
             var qp = querystring.stringify(qs)
             var callScript = this.endPoint1 + qp
         }
@@ -59,9 +58,9 @@ module.exports = NodeHelper.create({
         this.getData(callScript, payload)
     },
 
-    deconEverything: function(payload){
+    deconEverything: function (payload) {
         var query = payload
-        for(i in query) {
+        for (i in query) {
             var q = query[i]
             var qs = {}
             if (q.hasOwnProperty("country") && q.country !== "") {
@@ -70,24 +69,24 @@ module.exports = NodeHelper.create({
             if (q.hasOwnProperty("category") && q.category !== "") {
                 console.log("[MMM-NEWSAPI] Invalid Option specified. Country not allowed with 'everything'!")
             }
-            if (q.hasOwnProperty("q") && q.q !== "") qs =Object.assign({}, qs, {"q":q["q"]})
-            if (q.hasOwnProperty("qInTitle") && q.qInTitle !== "") qs = Object.assign({}, qs, {"qIntTitle":q["qInTitle"]})
+            if (q.hasOwnProperty("q") && q.q !== "") qs = Object.assign({}, qs, { "q": q["q"] })
+            if (q.hasOwnProperty("qInTitle") && q.qInTitle !== "") qs = Object.assign({}, qs, { "qIntTitle": q["qInTitle"] })
             if (q.hasOwnProperty("domains") && q.domains !== "") {
-            var d = q["domains"].replace(/\s/g, "")
-            qs = Object.assign({}, qs, {"domains":d})
+                var d = q["domains"].replace(/\s/g, "")
+                qs = Object.assign({}, qs, { "domains": d })
             }
             if (q.hasOwnProperty("excludeDomains") && q.excludeDomains !== "") {
                 var ed = q["excludeDomains"].replace(/\s/g, "")
-                qs = Object.assign({}, qs, {"excludeDomains":ed})
+                qs = Object.assign({}, qs, { "excludeDomains": ed })
             }
             if (q.hasOwnProperty("sources") && q.sources !== "") {
-            var t = q["sources"].replace(/\s/g, "")
-            qs = Object.assign({}, qs, {"sources":t})
+                var t = q["sources"].replace(/\s/g, "")
+                qs = Object.assign({}, qs, { "sources": t })
             }
-            if (q.hasOwnProperty("language") && q.language !== "") qs = Object.assign({}, qs, {"language":q["language"]})
-            qs = Object.assign({}, qs, {"pageSize":payload.pageSize})
-            if (q.hasOwnProperty("sortBy") && q.sortBy !== "") qs = Object.assign({}, qs, {"sortBy":payload.sortBy})
-            qs = Object.assign({}, qs, {"apiKey":payload.apiKey})
+            if (q.hasOwnProperty("language") && q.language !== "") qs = Object.assign({}, qs, { "language": q["language"] })
+            qs = Object.assign({}, qs, { "pageSize": payload.pageSize })
+            qs = Object.assign({}, qs, { "sortBy": payload.sortBy })
+            qs = Object.assign({}, qs, { "apiKey": payload.apiKey })
             var qp = querystring.stringify(qs)
             var callScript = this.endPoint2 + qp
         }
@@ -95,7 +94,7 @@ module.exports = NodeHelper.create({
         this.getData(callScript, payload)
     },
 
-    formatResults: function(ret, payload) {
+    formatResults: function (ret, payload) {
         var results = []
         var self = this
         var count = payload.pageSize
@@ -106,9 +105,9 @@ module.exports = NodeHelper.create({
             // article.publishedAt = time.fromNow()
             luxTime = DateTime.fromISO(article.publishedAt).toRelative()
             article.publishedAt = luxTime
-            if(!article.content) article.content = article.description
-            if(!article.author) article.author = ""
-            if(!article.description) article.description = article.content
+            if (!article.content) article.content = article.description
+            if (!article.author) article.author = ""
+            if (!article.description) article.description = article.content
             results.push(article)
         }
         if (results.length > 0) this.articles = this.articles.concat(results)
@@ -119,7 +118,7 @@ module.exports = NodeHelper.create({
     async getData(callScript, payload) {
         var response = await fetch(callScript)
 
-        if(!response.status == 200) {
+        if (!response.status == 200) {
             console.error(`Error retrieving NewsAPI data: ${response.statusCode} ${response.statusText}`)
             return;
         }
@@ -129,7 +128,7 @@ module.exports = NodeHelper.create({
     },
 
     // Socket Notification Received
-    socketNotificationReceived: function(notification, payload) {
+    socketNotificationReceived: function (notification, payload) {
         if (notification === "headlines") {
             this.deconHeadlines(payload)
         } else if (notification === "everything") {
