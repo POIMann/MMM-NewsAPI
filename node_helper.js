@@ -100,7 +100,8 @@ module.exports = NodeHelper.create({
         var count = payload.pageSize
         for (j in ret.articles) {
             var article = ret.articles[j]
-            article.sourceName = article.source.name
+            article.sourceName = article.source.Name
+            article.sourceId = article.source.Id
             // var time = moment(article.publishedAt)
             // article.publishedAt = time.fromNow()
             luxTime = DateTime.fromISO(article.publishedAt).toRelative()
@@ -112,7 +113,7 @@ module.exports = NodeHelper.create({
         }
         if (results.length > 0) this.articles = this.articles.concat(results)
         if (payload.debug) console.log("sending articles: ", JSON.stringify(this.articles))
-        this.sendSocketNotification("UPDATE", this.articles)
+        this.sendSocketNotification("NEWSAPI_UPDATE", this.articles)
     },
 
     async getData(callScript, payload) {

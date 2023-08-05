@@ -12,6 +12,7 @@ Module.register("MMM-NewsAPI", {
         drawInterval: 1000*30,
         fetchInterval: 1000*60*60,
         debug: false,
+        QRCode: false,
         query: {
             country: "us",
             category: "",
@@ -28,6 +29,11 @@ Module.register("MMM-NewsAPI", {
     getStyles: function() {
         return [this.file("MMM-NewsAPI.css")]
     },
+    
+    // Import QR code script file
+    getScripts: function() {
+        return ["https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"];
+    },
 
     // Start process
     start: function() {
@@ -35,6 +41,7 @@ Module.register("MMM-NewsAPI", {
         this.index = 0
         this.timer = null
         this.template = ""
+        suspended = false;
         this.newsArticles = []
         if (this.config.debug) Log.log("config: ", JSON.stringify(this.config))
         // Start function call to node_helper
@@ -42,6 +49,22 @@ Module.register("MMM-NewsAPI", {
         // Schedule the next update
         this.scheduleUpdate()
     },
+
+    stop: function () {
+        Log.info('Stopping module ' + this.name);
+      },
+    
+      resume: function () {
+        Log.info('Resuming module ' + this.name);
+        Log.debug('with config: ' + JSON.stringify(this.config));
+        this.suspended = false;
+        this.updateDom()
+      },
+    
+      suspend: function () {
+        Log.info('Suspending module ' + this.name);
+        this.suspended = true;
+      },
 
     getDom: function() {
         var wrapper = document.createElement("div")
@@ -94,7 +117,7 @@ Module.register("MMM-NewsAPI", {
     socketNotificationReceived: function(notification, payload) {
         if (this.config.debug) Log.log("payload received: ", JSON.stringify(payload))
         var self = this
-        if (notification === "UPDATE") {
+        if (notification === "NEWSAPI_UPDATE") {
             this.newsArticles = payload
             if (this.firstUpdate == 0) {
                 this.firstUpdate = 1
@@ -152,7 +175,12 @@ Module.register("MMM-NewsAPI", {
             news.classList.remove("hideArticle")
             news.classList.add("showArticle")
             newsContent.innerHTML = template
-
+            if (this.config.QRCode) {
+                var qr = new QRious({
+                    element: document.getElementById('NEWSAPI_QRCODE'),
+                    value: article.url
+                });
+            }
         }, 900)
         this.timer = setTimeout(() => {
             this.index++
