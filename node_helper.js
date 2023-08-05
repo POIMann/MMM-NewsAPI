@@ -50,6 +50,7 @@ module.exports = NodeHelper.create({
                 }
             }
             qs = Object.assign({}, qs, { "pageSize": payload.pageSize })
+            if (q.hasOwnProperty("sortBy") && q.sortBy !== "") qs = Object.assign({}, qs, { "sortBy": payload.sortBy })
             qs = Object.assign({}, qs, { "apiKey": payload.apiKey })
             var qp = querystring.stringify(qs)
             var callScript = this.endPoint1 + qp
@@ -59,39 +60,73 @@ module.exports = NodeHelper.create({
     },
 
     deconEverything: function (payload) {
-        var query = payload
-        for (i in query) {
-            var q = query[i]
-            var qs = {}
-            if (q.hasOwnProperty("country") && q.country !== "") {
-                console.log("[MMM-NEWSAPI] Invalid Option specified. Country not allowed with 'everything'!")
-            }
-            if (q.hasOwnProperty("category") && q.category !== "") {
-                console.log("[MMM-NEWSAPI] Invalid Option specified. Country not allowed with 'everything'!")
-            }
-            if (q.hasOwnProperty("q") && q.q !== "") qs = Object.assign({}, qs, { "q": q["q"] })
-            if (q.hasOwnProperty("qInTitle") && q.qInTitle !== "") qs = Object.assign({}, qs, { "qIntTitle": q["qInTitle"] })
-            if (q.hasOwnProperty("domains") && q.domains !== "") {
-                var d = q["domains"].replace(/\s/g, "")
-                qs = Object.assign({}, qs, { "domains": d })
-            }
-            if (q.hasOwnProperty("excludeDomains") && q.excludeDomains !== "") {
-                var ed = q["excludeDomains"].replace(/\s/g, "")
-                qs = Object.assign({}, qs, { "excludeDomains": ed })
-            }
-            if (q.hasOwnProperty("sources") && q.sources !== "") {
-                var t = q["sources"].replace(/\s/g, "")
-                qs = Object.assign({}, qs, { "sources": t })
-            }
-            if (q.hasOwnProperty("language") && q.language !== "") qs = Object.assign({}, qs, { "language": q["language"] })
-            qs = Object.assign({}, qs, { "pageSize": payload.pageSize })
-            qs = Object.assign({}, qs, { "sortBy": payload.sortBy })
-            qs = Object.assign({}, qs, { "apiKey": payload.apiKey })
-            var qp = querystring.stringify(qs)
-            var callScript = this.endPoint2 + qp
+        const qs = {};
+
+        function hasValidOption(obj, prop) {
+            return obj.hasOwnProperty(prop) && obj[prop] !== "";
         }
-        if (payload.debug) console.log("everything callscript: ", callScript)
-        this.getData(callScript, payload)
+
+        if (hasValidOption(payload, "apiKey")) {
+            qs.apiKey = payload.apiKey;
+        }
+
+        if (hasValidOption(payload, "sortBy")) {
+            qs.sortBy = payload.sortBy;
+        }
+
+        if (hasValidOption(payload, "pageSize")) {
+            qs.pageSize = payload.pageSize;
+        }
+
+        const query = payload.query;
+        let callScript = "";
+
+        for (let key in query) {
+            const value = query[key];
+
+            if (key === "country" && value !== "") {
+                console.log("[MMM-NEWSAPI] Invalid Option specified. Country not allowed with 'everything'!");
+            }
+
+            if (key === "category" && value !== "") {
+                console.log("[MMM-NEWSAPI] Invalid Option specified. Category not allowed with 'everything'!");
+            }
+
+            if (key === "q" && value !== "") {
+                qs.q = value;
+            }
+
+            if (key === "qInTitle" && value !== "") {
+                qs.qIntTitle = value;
+            }
+
+            if (key === "domains" && value !== "") {
+                const d = value.replace(/\s/g, "");
+                qs.domains = d;
+            }
+
+            if (key === "excludeDomains" && value !== "") {
+                const ed = value.replace(/\s/g, "");
+                qs.excludeDomains = ed;
+            }
+
+            if (key === "sources" && value !== "") {
+                const t = value.replace(/\s/g, "");
+                qs.sources = t;
+            }
+
+            if (key === "language" && value !== "") {
+                qs.language = value;
+            }
+
+            callScript = this.endPoint2 + querystring.stringify(qs);
+        }
+
+        if (payload.debug) {
+            console.log("everything callscript: ", callScript);
+        }
+
+        this.getData(callScript, payload);
     },
 
     formatResults: function (ret, payload) {
@@ -100,8 +135,8 @@ module.exports = NodeHelper.create({
         var count = payload.pageSize
         for (j in ret.articles) {
             var article = ret.articles[j]
-            article.sourceName = article.source.Name
-            article.sourceId = article.source.Id
+            article.sourceName = article.source.name
+            article.sourceId = article.source.id
             // var time = moment(article.publishedAt)
             // article.publishedAt = time.fromNow()
             luxTime = DateTime.fromISO(article.publishedAt).toRelative()
